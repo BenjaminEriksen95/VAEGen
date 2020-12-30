@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 from modules import Flatten, UnFlatten, UnFlatten_FF, NNprint
 import torch.nn.functional as F
 
