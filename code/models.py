@@ -90,7 +90,7 @@ class VAE(torch.nn.Module):
         z = self.decoder(z)
         return z
 
-    def forward(self, x,labels):
+    def forward(self, x, labels):
         z, mu, logvar = self.encode(x,labels)
         z = self.decode(z)
         return z, mu, logvar

@@ -99,9 +99,10 @@ def run_epochs(mode, model, optimizer, epochs, train_loader, test_loader, train_
     if mode == "vae":
         model.train
         # 100 epochs recommended for vae
+        batch_size = 512 # TODO fix
         for epoch in range(epochs):
             for idx, (images, labels) in enumerate(train_loader):
-                recon_images, mu, logvar = model(images.to(device),labels)
+                recon_images, mu, logvar = model(images.to(model.device),labels)
                 loss, bce, kld = model.loss_fn(recon_images, images, mu, logvar)
                 optimizer.zero_grad()
                 loss.backward()
