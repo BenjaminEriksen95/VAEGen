@@ -95,9 +95,22 @@ def test_m2(model, test_loader):
 
 
 
-def run_epochs(mode, model, optimizer ,epochs, train_loader, test_loader, train_loss, test_loss, train_acc=None, test_acc=None):
+def run_epochs(mode, model, optimizer, epochs, train_loader, test_loader, train_loss=None, test_loss=None, train_acc=None, test_acc=None):
     if mode == "vae":
-        print("TODO")
+        model.train
+        # 100 epochs recommended for vae
+        for epoch in range(epochs):
+            for idx, (images, labels) in enumerate(train_loader):
+                recon_images, mu, logvar = model(images.to(device),labels)
+                loss, bce, kld = model.loss_fn(recon_images, images, mu, logvar)
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+                if idx%10==0:
+                    to_print = "Epoch[{}/{}] Loss: {:.3f} {:.3f} {:.3f}".format(epoch+1,
+                                                epochs, loss.data.cpu().numpy().tolist()/batch_size, bce.data.cpu().numpy().tolist()/batch_size, kld.data.cpu().numpy().tolist()/batch_size)
+                    print(to_print)
+
     elif mode == "m1":
         for epoch in range(epochs):
             print(f"Epoch {epoch+1} of {epochs}")

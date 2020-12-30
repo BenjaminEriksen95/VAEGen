@@ -16,7 +16,106 @@ def reduce_sum(x: torch.Tensor) -> torch.Tensor:
 
 
 ## VAE
+class VAE(torch.nn.Module):
+    def __init__(self, device, image_channels=1, h_dim=1024, z_dim=32,num_labels=0):
+        super(VAE, self).__init__()
+        self.device = device
+        self.h_dim = h_dim
+        self.z_dim = z_dim
 
+        self.encoder = torch.nn.Sequential(
+            NNprint(),
+            torch.nn.Conv2d(image_channels, 32, kernel_size=3, stride=2),
+            NNprint(),
+            torch.nn.LeakyReLU(),
+            torch.nn.Conv2d(32, 64, kernel_size=3, stride=2),
+            NNprint(),
+            torch.nn.LeakyReLU(),
+            torch.nn.Conv2d(64, 128, kernel_size=3, stride=1),
+            NNprint(),
+            torch.nn.LeakyReLU(),
+            torch.nn.Conv2d(128, 256, kernel_size=3, stride=1),
+            NNprint(),
+            torch.nn.LeakyReLU(),
+            Flatten(),
+            NNprint(),
+
+        )
+        self.h_dim=h_dim
+        self.num_labels=num_labels
+        self.fc1 = torch.nn.Linear(h_dim, z_dim)
+        self.fc2 = torch.nn.Linear(h_dim, z_dim)
+        self.fc3 = torch.nn.Linear(z_dim+num_labels, h_dim)
+
+        self.decoder = torch.nn.Sequential(
+            NNprint(),
+            UnFlatten(),
+            NNprint(),
+            torch.nn.ConvTranspose2d(h_dim, 128, kernel_size=4, stride=2),
+            torch.nn.LeakyReLU(),
+            NNprint(),
+            torch.nn.ConvTranspose2d(128, 64, kernel_size=5, stride=2),
+            torch.nn.LeakyReLU(),
+            NNprint(),
+            torch.nn.ConvTranspose2d(64, 32, kernel_size=4,padding=0, stride=2),
+            torch.nn.LeakyReLU(),
+            NNprint(),
+            torch.nn.ConvTranspose2d(32, image_channels, kernel_size=5, stride=1),
+            torch.nn.Sigmoid(),
+            NNprint(),
+        )
+
+    def reparameterize(self, mu, logvar):
+        std = logvar.mul(0.5).exp_()
+        # return torch.normal(mu, std)
+        esp = torch.randn(*mu.size())
+        z = mu.to(self.device) + std.to(self.device) * esp.to(self.device)
+        return z
+
+    def bottleneck(self, h,labels):
+        mu, logvar = self.fc1(h), self.fc2(h)
+        z = self.reparameterize(mu, logvar)
+        if self.num_labels>0:
+            z=torch.cat((z,torch.nn.functional.one_hot(labels,self.num_labels)
+                            .type(torch.float).to(self.device)),1)
+        return z, mu, logvar
+
+    def encode(self, x,labels):
+        h = self.encoder(x)
+        z, mu, logvar = self.bottleneck(h,labels)
+        return z, mu, logvar
+
+    def decode(self, z):
+        z = self.fc3(z)
+        z = self.decoder(z)
+        return z
+
+    def forward(self, x,labels):
+        z, mu, logvar = self.encode(x,labels)
+        z = self.decode(z)
+        return z, mu, logvar
+
+    def loss_fn(self,recon_x, x, mu, logvar):
+      BCE = F.binary_cross_entropy(recon_x, x.to(self.device), size_average=False,reduction='sum' )
+      # see Appendix B from VAE paper:
+      # Kingma and Welling. Auto-Encoding Variational Bayes. ICLR, 2014
+      # 0.5 * sum(1 + log(sigma^2) - mu^2 - sigma^2)
+      KLD = -0.5 * torch.mean(1 + logvar - mu.pow(2) - logvar.exp())
+
+      return BCE + KLD, BCE, KLD
+
+    def sample(self, batch_size: int = 100,z_out=False):
+        """Sample z~p(z) and return p(x|z) / reconstruction
+        """
+        # sample z ~ N(0,I)
+        mu, logvar = torch.zeros((batch_size, self.z_dim)),torch.ones(batch_size, self.z_dim)
+        z = self.reparameterize(mu, logvar)
+        if z_out:
+            return z
+        # decode sampled z with condition
+        else:
+            x_recon = self.decode(z)
+            return x_recon.detach()  # no gradient_fn
 
 ## M1
 class M1(torch.nn.Module):

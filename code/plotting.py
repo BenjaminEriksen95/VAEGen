@@ -6,11 +6,12 @@ classes = [0,1,2,3,4,5,6,7,8,9]
 
 
 
-
-def plot_64_m1(model=None,sample=False,data=None,y=torch.arange(len(classes)-1)):
+# for VAE and M1
+def plot_64(model=None,batch=None,sample=False,data=None,y=torch.arange(len(classes)-1)):
     if data is None:
         if (model==None):
-            batch_idx, (data, example_targets) = next(examples)
+            batch_idx, (data, example_targets) = next(batch)
+            #print(data)
         else:
             if sample:
                 data = model.sample()
@@ -26,19 +27,21 @@ def plot_64_m1(model=None,sample=False,data=None,y=torch.arange(len(classes)-1))
         if model:
             plt.imshow(data[i][0].cpu().data,  interpolation='none')
         else:
+            #print(data[i].shape)
+            #plt.imshow((data[i]), interpolation='none')
             plt.imshow(data[i][0], interpolation='none')
         plt.xticks([])
         plt.yticks([])
     plt.show()
 
 
-
-def plot_64_m2(model=None,sample=False,data=None,y=torch.arange(len(classes)-1)):
+# for M2
+def plot_64_m2(model=None,batch=None,sample=False,data=None,y=torch.arange(len(classes)-1)):
     fig = plt.figure()
     if data is None:
         if (model==None):
             plt.title("Input images")
-            batch_idx, (data, example_targets) = next(examples)
+            batch_idx, (data, example_targets) = next(batch)
         else:
             if sample:
                 plt.title("Samples from latent space")
