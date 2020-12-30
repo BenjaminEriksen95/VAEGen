@@ -37,7 +37,7 @@ def create_loader(dset, batch_size, classes=[0,1,2,3,4,5,6,7,8,9]):
                         sampler=stratified_sampler(dset.targets,classes))
 
 # Make subsets
-def create_subset(dset, classes=[0,1,2,3,4,5,6,7,8,9], size=100):
+def create_subset(dset, batch_size, classes=[0,1,2,3,4,5,6,7,8,9], size=100):
     idx_subset = get_target_indexes(dset, classes, size)
     dset_subset = Subset(dset, idx_subset)
 

@@ -1,7 +1,10 @@
-# 2 (Report) Train a classifier on their latent representation.
-
+import sklearn
+import seaborn as sns
+import pandas as pd
+import torch
+import matplotlib.pyplot as plt
 from sklearn.neighbors import KNeighborsClassifier
-
+from loaders import get_target_indexes
 
 def kneighbors_classifier(model,dset_train, dset_test, classes=[0,1,2,3,4,5,6,7,8,9]):
     neigh = KNeighborsClassifier(n_neighbors=3)
@@ -13,7 +16,7 @@ def kneighbors_classifier(model,dset_train, dset_test, classes=[0,1,2,3,4,5,6,7,
 
     model.eval()
     with torch.no_grad():
-        mu, logvar=model.encode(X_train.to(device))
+        mu, logvar=model.encode(X_train.to(model.device))
         z=model.reparameterize(mu, logvar)
     Z_train = z.cpu().numpy()
 
@@ -30,7 +33,7 @@ def kneighbors_classifier(model,dset_train, dset_test, classes=[0,1,2,3,4,5,6,7,
 
     model.eval()
     with torch.no_grad():
-        mu, logvar=model.encode(X_test.to(device))
+        mu, logvar=model.encode(X_test.to(model.device))
         z=model.reparameterize( mu, logvar)
         Z_test = z.cpu().numpy()
 
@@ -41,6 +44,7 @@ def kneighbors_classifier(model,dset_train, dset_test, classes=[0,1,2,3,4,5,6,7,
     cm = sklearn.metrics.confusion_matrix(y_true = y_test, y_pred = y_pred)
     df_cm = pd.DataFrame(cm, index = [str(i) for i in classes],
                            columns = [str(i) for i in classes])
+
     plt.figure(figsize = (10,7))
     sns.heatmap(df_cm, annot=True)
     plt.show()
