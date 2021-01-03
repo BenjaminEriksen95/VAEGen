@@ -100,6 +100,7 @@ def plot_interpolation_m1(model,z_in=None,image_n=0,latent_dim=8,imsize=28,inter
   plt.show()
   return(ztest.std(0).cpu().detach().numpy())
 
+# could be generalized to take a specific number. It is right now harded to interpolate on class 5.
 def plot_interpolation_m2(model, z_in=None,image_n=0,latent_dim=8,imsize=28,interpolate_dim=20,std_=3,batch_size=100):
   if z_in is None:
       ztest =model.sample(batch_size=batch_size,z_out=True)
@@ -125,6 +126,7 @@ def plot_interpolation_m2(model, z_in=None,image_n=0,latent_dim=8,imsize=28,inte
   fig.set_figheight(40)
   fig.set_figwidth(20)
   plt.imshow(all_pics, interpolation='none')
+  plt.show()
   return(ztest.std(0).cpu().detach().numpy())
 
 

@@ -9,7 +9,7 @@ import torch
 
 ## Settings
 batch_size = 512
-epochs = 20
+epochs = 10
 latent_dim = 8
 learning_rate = 1e-3
 image_channels = 1
@@ -104,13 +104,11 @@ elif mode=="m2":
 
     # sample model and plot interpolations
     z_in = model.sample(y=torch.Tensor([0,1,2,3,4,5,6,7,8,9]).type(torch.int64))["z"]
-    plot_interpolation_m2(model, z_in=z_in,image_n=0,latent_dim=latent_dim,imsize=28,interpolate_dim=18,std_=5,batch_size=10000)
+    plot_interpolation_m2(model, z_in=z_in,image_n=0,latent_dim=latent_dim,imsize=28,interpolate_dim=18,std_=3,batch_size=10000)
 
 else:
     print("Unknown mode")
     exit()
-
-
 
 
 

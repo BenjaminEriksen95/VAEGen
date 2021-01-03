@@ -446,7 +446,7 @@ class M2(torch.nn.Module):
       # classification loss ####################################################
       y = y_labelled
       y_labelled_pred = Ls[4]
-      C = F.cross_entropy(y_labelled_pred, y, reduce=False)
+      C = F.cross_entropy(y_labelled_pred, y, reduction='none')
 
       # final loss #############################################################
       J = -Lxy.mean() + -U.mean()
