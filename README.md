@@ -15,6 +15,6 @@ Students
 ## Reproducing results
 
 The main results of our report may be reproduced by running
-[this notebook](code/main.ipynb).
+[this notebook](code/main_v2.ipynb).
 
 If run in Google Colab, the notebook will clone this repository and extract the required python modules.
