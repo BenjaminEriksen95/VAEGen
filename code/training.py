@@ -3,7 +3,8 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 
-def fit_m1(model, train_loader,optimizer):
+
+def fit_m1(model, train_loader, optimizer):
     model.train()
     running_loss = 0.0
     # Run each batch in training dataset
@@ -107,10 +108,10 @@ def run_epochs(mode, model, optimizer, epochs, train_loader, test_loader, train_
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
-                if idx%10==0:
-                    to_print = "Epoch[{}/{}] Loss: {:.3f} {:.3f} {:.3f}".format(epoch+1,
-                                                epochs, loss.data.cpu().numpy().tolist()/batch_size, bce.data.cpu().numpy().tolist()/batch_size, kld.data.cpu().numpy().tolist()/batch_size)
-                    print(to_print)
+
+            to_print = "Epoch[{}/{}] Loss: {:.3f} {:.3f} {:.3f}".format(epoch+1,
+                                                                        epochs, loss.data.cpu().numpy().tolist()/batch_size, bce.data.cpu().numpy().tolist()/batch_size, kld.data.cpu().numpy().tolist()/batch_size)
+            print(to_print)
 
     elif mode == "m1":
         for epoch in range(epochs):
