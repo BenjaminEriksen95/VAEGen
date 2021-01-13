@@ -116,7 +116,7 @@ def plot_interpolation_m2(model, z_in=None,image_n=0,latent_dim=8,imsize=28,inte
       test_data[c][int(c/interpolate_dim)]=range_[int(c/interpolate_dim)][c%interpolate_dim]
       # print(c,int(c/interpolate_dim),"_",int(c/interpolate_dim),c%interpolate_dim,"_",range_[int(c/interpolate_dim)][c%interpolate_dim])
       # print(c,test_data[c].cpu().detach().numpy())
-  smple_pic =model.decode(test_data.to(model.device),y=torch.ones(144).type(torch.int64)*5)
+  smple_pic = model.decode(test_data.to(model.device),y=torch.ones((model.z_dim*interpolate_dim)).type(torch.int64)*5)
   all_pics=np.zeros([imsize*latent_dim,imsize*interpolate_dim])
   for i in range(latent_dim):
       for j in range(interpolate_dim):
